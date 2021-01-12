@@ -4,7 +4,7 @@ use PTR\Display;
 $status       = 'Errored';
 $status_title = 'No results found for test.';
 $results      = get_post_meta( $report->ID, 'results', true );
-if ( isset( $results['failures'] ) ) {
+if ( isset( $results['failures'] ) && ! empty( $results['tests'] ) ) {
 	$status       = 0 === (int) $results['failures'] && 0 === (int) $results['errors'] ? 'Passed' : 'Failed';
 	$status_title = (int) $results['tests'] . ' tests, ' . (int) $results['failures'] . ' failed, ' . (int) $results['errors'] . ' errors';
 }
@@ -16,7 +16,11 @@ if ( $user ) {
 		$host .= '<a target="_blank" rel="nofollow" href="' . esc_url( $user->user_url ) . '">';
 	}
 	$host .= get_avatar(
-		$user->ID, 18, '', '', array(
+		$user->ID,
+		18,
+		'',
+		'',
+		array(
 			'extra_attr' => 'style="vertical-align: middle;margin-right:5px;"',
 		)
 	);
@@ -37,7 +41,7 @@ if ( $user ) {
 <?php
 $parent = get_post( $report->post_parent );
 if ( $parent ) :
-?>
+	?>
 <p><a href="<?php echo esc_url( get_permalink( $parent ) ); ?>">&larr; <?php echo esc_html( $parent->post_name ) . ': ' . apply_filters( 'the_title', get_the_title( $parent ) ); ?></a></p>
 <?php endif; ?>
 
@@ -64,7 +68,12 @@ if ( $parent ) :
 	</tr>
 </table>
 
-<?php if ( ! empty( $results['failures'] ) ) : ?>
+<?php
+if (
+	! empty( $results['failures'] ) ||
+	! empty( $results['errors'] )
+	) :
+	?>
 	<h2>Errors/Failures</h2>
 
 	<?php
@@ -73,9 +82,9 @@ if ( $parent ) :
 			continue;
 		}
 		foreach ( $testsuite['testcases'] as $test_name => $testcase ) :
-		?>
+			?>
 		<p><strong><?php echo esc_html( $suite_name . '::' . $test_name ); ?></strong></p>
-		<pre><?php echo ! empty( $testcase['failure'] ) ? $testcase['failure'] : $testcase['error']; ?></pre>
+		<pre><?php echo esc_html( ! empty( $testcase['failure'] ) ? $testcase['failure'] : $testcase['error'] ); ?></pre>
 		<?php endforeach; ?>
 		<?php endforeach; ?>
 <?php endif; ?>

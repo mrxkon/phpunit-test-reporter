@@ -38,14 +38,14 @@ class TestRestAPI extends WP_UnitTestCase {
 		$request = new WP_REST_Request( 'POST', '/wp-unit-test-api/v1/results' );
 		$request->set_body_params(
 			array(
-				'results' => json_encode(
+				'results' => wp_json_encode(
 					array(
 						'failures' => 5,
 					)
 				),
 				'commit'  => '1234',
 				'message' => 'Docs: Did something',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -62,14 +62,14 @@ class TestRestAPI extends WP_UnitTestCase {
 		$request = new WP_REST_Request( 'POST', '/wp-unit-test-api/v1/results' );
 		$request->set_body_params(
 			array(
-				'results' => json_encode(
+				'results' => wp_json_encode(
 					array(
 						'failures' => 5,
 					)
 				),
 				'commit'  => 'abc1234',
 				'message' => 'Docs: Did something',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -80,21 +80,21 @@ class TestRestAPI extends WP_UnitTestCase {
 		$this->assertEquals( 400, $response->get_status() );
 		$data = $response->get_data();
 		$this->assertEquals( 'Invalid parameter(s): commit', $data['message'] );
-		$this->assertEquals( 'Value must be numeric.', $data['data']['params']['commit'] );
+		$this->assertEquals( 'commit is not of type integer.', $data['data']['params']['commit'] );
 	}
 
 	public function test_create_result_invalid_message() {
 		$request = new WP_REST_Request( 'POST', '/wp-unit-test-api/v1/results' );
 		$request->set_body_params(
 			array(
-				'results' => json_encode(
+				'results' => wp_json_encode(
 					array(
 						'failures' => 5,
 					)
 				),
 				'commit'  => '1234',
 				'message' => '',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -116,7 +116,7 @@ class TestRestAPI extends WP_UnitTestCase {
 				'results' => '{"failures": "5"}',
 				'commit'  => '1234',
 				'message' => 'Docs: Did something',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -153,7 +153,8 @@ class TestRestAPI extends WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'failures' => '5',
-			), $results
+			),
+			$results
 		);
 	}
 
@@ -165,7 +166,7 @@ class TestRestAPI extends WP_UnitTestCase {
 				'results' => '{"failures": "1"}',
 				'commit'  => '1234',
 				'message' => 'Docs: Did something',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -182,7 +183,8 @@ class TestRestAPI extends WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'failures' => '1',
-			), $results
+			),
+			$results
 		);
 
 		// Make second request.
@@ -191,7 +193,7 @@ class TestRestAPI extends WP_UnitTestCase {
 				'results' => '{"failures": "0"}',
 				'commit'  => '1234',
 				'message' => 'Docs: Did something',
-				'env'     => json_encode(
+				'env'     => wp_json_encode(
 					array(
 						'php_version' => '7.1',
 					)
@@ -206,7 +208,8 @@ class TestRestAPI extends WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'failures' => '0',
-			), $results
+			),
+			$results
 		);
 	}
 
